@@ -20,7 +20,7 @@ public class UsuarioDAO {
     private static final String SQL_INSERT = "INSERT INTO usuario(username, password) VALUES(?, ?)";
     private static final String SQL_UPDATE = "UPDATE usuario SET username=?, password=? WHERE id_usuario = ?";
     private static final String SQL_DELETE = "DELETE FROM usuario WHERE id_usuario=?";
-    private static final String SQL_QUERY = "SELECT id_usuario, username, password FROM usuario WHERE id_usuario = ?";
+    private static final String SQL_QUERY = "SELECT id_usuario, username, password FROM usuario WHERE username = ?";
 
     public List<Usuario> select() {
         Connection conn = null;
@@ -126,31 +126,27 @@ public class UsuarioDAO {
         return rows;
     }
 
-    public int query(Usuario usuario) {
+    public Usuario query(Usuario usuario) {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        int rows = 0;
-
         try {
             conn = Conexion.getConnection();
             System.out.println("Ejecutando query:" + SQL_QUERY);
             stmt = conn.prepareStatement(SQL_QUERY);
-            stmt.setInt(1, usuario.getId_usuario());
+            stmt.setString(1, usuario.getUsername());
             rs = stmt.executeQuery();
             while (rs.next()) {
                 int id_usuario = rs.getInt("id_usuario");
                 String username = rs.getString("username");
                 String password = rs.getString("password");
-                
+
                 usuario = new Usuario();
                 usuario.setId_usuario(id_usuario);
                 usuario.setUsername(username);
                 usuario.setPassword(password);
-                
-                rows++;
             }
-            System.out.println("Registros buscado:" + usuario);
+            //System.out.println("Registros buscado:" + persona);
         } catch (SQLException ex) {
             ex.printStackTrace(System.out);
         } finally {
@@ -159,6 +155,7 @@ public class UsuarioDAO {
             Conexion.close(conn);
         }
 
-        return rows;
+        //return personas;  // Si se utiliza un ArrayList
+        return usuario;
     }
 }

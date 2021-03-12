@@ -5,8 +5,11 @@
  */
 package datos;
 
-import domain.Usuario;
-import java.sql.*;
+import domain.Vendedor;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,35 +17,36 @@ import java.util.List;
  *
  * @author visitante
  */
-public class UsuarioDAO {
+public class VendedorDAO {
 
-    private static final String SQL_SELECT = "SELECT id_usuario, username, password FROM usuario";
-    private static final String SQL_INSERT = "INSERT INTO usuario(username, password) VALUES(?, ?)";
-    private static final String SQL_UPDATE = "UPDATE usuario SET username=?, password=? WHERE id_usuario = ?";
-    private static final String SQL_DELETE = "DELETE FROM usuario WHERE id_usuario=?";
-    private static final String SQL_QUERY = "SELECT id_usuario, username, password FROM usuario WHERE id_usuario = ?";
+    private static final String SQL_SELECT = "SELECT id_vendedor, nombre_vendedor, dire_vendedor FROM vendedor";
+    private static final String SQL_INSERT = "INSERT INTO vendedor(nombre_vendedor, dire_vendedor) VALUES(?, ?)";
+    private static final String SQL_UPDATE = "UPDATE vendedor SET nombre_vendedor=?, dire_vendedor=? WHERE id_vendedor = ?";
+    private static final String SQL_DELETE = "DELETE FROM vendedor WHERE id_vendedor=?";
+    private static final String SQL_QUERY = "SELECT id_vendedor, nombre_vendedor, dire_vendedor FROM vendedor WHERE id_vendedor = ?";
 
-    public List<Usuario> select() {
+    public List<Vendedor> select() {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        Usuario usuario = null;
-        List<Usuario> usuarios = new ArrayList<Usuario>();
+        Vendedor vendedor = null;
+        List<Vendedor> vendedores = new ArrayList<Vendedor>();
+
         try {
             conn = Conexion.getConnection();
             stmt = conn.prepareStatement(SQL_SELECT);
             rs = stmt.executeQuery();
             while (rs.next()) {
-                int id_usuario = rs.getInt("id_usuario");
-                String username = rs.getString("username");
-                String password = rs.getString("password");
-
-                usuario = new Usuario();
-                usuario.setId_usuario(id_usuario);
-                usuario.setUsername(username);
-                usuario.setPassword(password);
-
-                usuarios.add(usuario);
+                int id_vendedor = rs.getInt("id_vendedor");
+                String nombre = rs.getString("nombre_vendedor");
+                String direccion = rs.getString("dire_vendedor");
+                
+                vendedor = new Vendedor();
+                vendedor.setId_vendedor(id_vendedor);
+                vendedor.setNombreVendedor(nombre);
+                vendedor.setDireVendedor(direccion);
+                
+                vendedores.add(vendedor);
             }
 
         } catch (SQLException ex) {
@@ -53,18 +57,19 @@ public class UsuarioDAO {
             Conexion.close(conn);
         }
 
-        return usuarios;
+        return vendedores;
     }
 
-    public int insert(Usuario usuario) {
+    public int insert(Vendedor vendedor) {
         Connection conn = null;
         PreparedStatement stmt = null;
         int rows = 0;
         try {
             conn = Conexion.getConnection();
             stmt = conn.prepareStatement(SQL_INSERT);
-            stmt.setString(1, usuario.getUsername());
-            stmt.setString(2, usuario.getPassword());
+            stmt.setString(1, vendedor.getNombreVendedor());
+            stmt.setString(2, vendedor.getDireVendedor());
+
 
             System.out.println("ejecutando query:" + SQL_INSERT);
             rows = stmt.executeUpdate();
@@ -79,17 +84,18 @@ public class UsuarioDAO {
         return rows;
     }
 
-    public int update(Usuario usuario) {
+    public int update(Vendedor vendedor) {
         Connection conn = null;
         PreparedStatement stmt = null;
         int rows = 0;
+
         try {
             conn = Conexion.getConnection();
             System.out.println("ejecutando query: " + SQL_UPDATE);
             stmt = conn.prepareStatement(SQL_UPDATE);
-            stmt.setString(1, usuario.getUsername());
-            stmt.setString(2, usuario.getPassword());
-            stmt.setInt(3, usuario.getId_usuario());
+            stmt.setString(1, vendedor.getNombreVendedor());
+            stmt.setString(2, vendedor.getDireVendedor());
+            stmt.setInt(3, vendedor.getId_vendedor());
 
             rows = stmt.executeUpdate();
             System.out.println("Registros actualizado:" + rows);
@@ -104,7 +110,7 @@ public class UsuarioDAO {
         return rows;
     }
 
-    public int delete(Usuario usuario) {
+    public int delete(Vendedor vendedor) {
         Connection conn = null;
         PreparedStatement stmt = null;
         int rows = 0;
@@ -113,7 +119,7 @@ public class UsuarioDAO {
             conn = Conexion.getConnection();
             System.out.println("Ejecutando query:" + SQL_DELETE);
             stmt = conn.prepareStatement(SQL_DELETE);
-            stmt.setInt(1, usuario.getId_usuario());
+            stmt.setInt(1, vendedor.getId_vendedor());
             rows = stmt.executeUpdate();
             System.out.println("Registros eliminados:" + rows);
         } catch (SQLException ex) {
@@ -126,31 +132,33 @@ public class UsuarioDAO {
         return rows;
     }
 
-    public int query(Usuario usuario) {
+//    public List<Persona> query(Persona vendedor) { // Si se utiliza un ArrayList
+    public Vendedor query(Vendedor vendedor) {    
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
+        List<Vendedor> vendedores = new ArrayList<Vendedor>();
         int rows = 0;
 
         try {
             conn = Conexion.getConnection();
             System.out.println("Ejecutando query:" + SQL_QUERY);
             stmt = conn.prepareStatement(SQL_QUERY);
-            stmt.setInt(1, usuario.getId_usuario());
+            stmt.setInt(1, vendedor.getId_vendedor());
             rs = stmt.executeQuery();
             while (rs.next()) {
-                int id_usuario = rs.getInt("id_usuario");
-                String username = rs.getString("username");
-                String password = rs.getString("password");
+                int id_vendedor = rs.getInt("id_vendedor");
+                String nombre = rs.getString("nombre_vendedor");
+                String direccion = rs.getString("dire_vendedor");
                 
-                usuario = new Usuario();
-                usuario.setId_usuario(id_usuario);
-                usuario.setUsername(username);
-                usuario.setPassword(password);
+                vendedor = new Vendedor();
+                vendedor.setId_vendedor(id_vendedor);
+                vendedor.setNombreVendedor(nombre);
+                vendedor.setDireVendedor(direccion);
                 
-                rows++;
+                //vendedores.add(vendedor); // Si se utiliza un ArrayList
             }
-            System.out.println("Registros buscado:" + usuario);
+            //System.out.println("Registros buscado:" + vendedor);
         } catch (SQLException ex) {
             ex.printStackTrace(System.out);
         } finally {
@@ -159,6 +167,8 @@ public class UsuarioDAO {
             Conexion.close(conn);
         }
 
-        return rows;
+        //return vendedores;  // Si se utiliza un ArrayList
+        return vendedor;
     }
+        
 }

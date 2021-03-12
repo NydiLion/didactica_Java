@@ -39,7 +39,7 @@ public class ManejoPersonas {
 //        personaDAO.delete(personaEliminar);
 //        // Prueba query
         Persona personaConsultar = new Persona();
-        personaConsultar.setId_persona(1);
+        personaConsultar.setId_persona(2);
         // Recuperación de información a través de otro objeto
         personaConsultar=personaDAO.query(personaConsultar);
         System.out.println("persona:" + personaConsultar.toString()); 
